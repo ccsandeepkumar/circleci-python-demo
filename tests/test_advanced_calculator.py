@@ -3,7 +3,7 @@ from app.calculator import add, subtract, multiply, divide
 
 
 def test_add_negative_numbers():
-    assert add(-2, -3) == 5
+    assert add(-2, -3) == -5
 
 
 def test_subtract_negative():
@@ -16,4 +16,5 @@ def test_multiply_zero():
 
 def test_divide_float():
     assert divide(7, 2) == 3.5
+
 
