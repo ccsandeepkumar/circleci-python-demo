@@ -6,12 +6,14 @@ orbs:
   path-filtering: circleci/path-filtering@1.0.0
 
 workflows:
-  version: 2
+  version: 2.1
   filter-and-trigger:
     jobs:
       - path-filtering/filter:
           name: check-test-list-change
           base-revision: main
           config-path: .circleci/continue.yml
+          # Only continue when the root-level test_list.py changes.
+          # Adjust the regex if test_list.py lives elsewhere.
           mapping: |
-            test_list.py run-tests true
+            ^test_list\.py$ run-tests true
