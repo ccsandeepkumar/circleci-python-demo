@@ -3,21 +3,26 @@ version: 2.1
 parameters:
   run-tests:
     type: boolean
-    default: false   ✅ MUST be false
+    default: false
 
 jobs:
   build-and-test:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.10   # ✅ Force Python ≥ 3.9
+
     steps:
       - checkout
+
+      - run:
+          name: Verify Python version
+          command: python --version
 
       - run:
           name: Install dependencies
           command: |
             python -m venv venv
             . venv/bin/activate
-            pip install --upgrade pip
+            python -m pip install --upgrade pip
             pip install -r requirements.txt
 
       - run:
