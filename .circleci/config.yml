@@ -4,6 +4,7 @@ jobs:
   build-and-test:
     docker:
       - image: cimg/python:3.10
+
     steps:
       - checkout
 
@@ -16,10 +17,13 @@ jobs:
             pip install -r requirements.txt
 
       - run:
-          name: Run tests
+          name: Run filtered tests from test_list.py
           command: |
             . venv/bin/activate
-            pytest -v
+            echo "Selected tests from test_list.py:"
+            TESTS=$(python test_list.py)
+            echo "$TESTS"
+            pytest -v $TESTS
 
 workflows:
   version: 2
