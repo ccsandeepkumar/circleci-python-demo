@@ -8,26 +8,35 @@ parameters:
 jobs:
   build-and-test:
     docker:
-      - image: cimg/python:3.9
+      # Pin to a specific 3.9 patch to avoid implicit upgrades
+      - image: cimg/python:3.9.18
 
     steps:
       - checkout
 
       - run:
-          name: Verify Python version
-          command: python --version
-
-      - run:
-          name: Install dependencies
+          name: Verify runtime (python & pip)
           command: |
             set -eo pipefail
+            echo "PATH: $PATH"
+            which python || true
+            python --version || true
+            which pip || true
+            pip --version || true
+
+      - run:
+          name: Install dependencies (fresh venv on Python 3.9)
+          command: |
+            set -eo pipefail
+            # Remove any stale venv to avoid 3.8 carry-over
+            rm -rf venv
+            python --version
             python -m venv venv
             . venv/bin/activate
             python -m pip install --upgrade pip
             if [ -f requirements.txt ]; then
               pip install -r requirements.txt
             else
-              # Ensure pytest is available even if requirements.txt is missing
               pip install pytest
             fi
 
@@ -36,23 +45,18 @@ jobs:
           command: |
             set -eo pipefail
             . venv/bin/activate
-
             if [ ! -f test_list.py ]; then
               echo "test_list.py not found at repository root"; exit 1
             fi
-
             TESTS=$(python test_list.py || true)
 
             if [ -z "$TESTS" ]; then
               echo "No tests returned by test_list.py; skipping pytest."
-              # Exit 0 to avoid failing the pipeline when nothing is selected
               exit 0
             fi
 
             echo "Running tests:"
             echo "$TESTS"
-
-            # Use xargs to safely handle spaces/newlines in the output
             echo "$TESTS" | xargs pytest -v
 
 workflows:
