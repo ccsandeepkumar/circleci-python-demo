@@ -3,7 +3,7 @@ version: 2.1
 parameters:
   run-tests:
     type: boolean
-    default: false
+    default: true
 
 jobs:
   build-and-test:
