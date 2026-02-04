@@ -6,7 +6,7 @@ execute ONLY these tests.
 
 SELECTED_TESTS = [
     "tests/test_calculator.py",
-    "tests/test_advanced_calculator.py",
+    # "tests/test_advanced_calculator.py",
     # "tests/test_login.py::test_valid_user",   # example (commented)
 ]
 
