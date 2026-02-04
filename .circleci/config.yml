@@ -13,7 +13,5 @@ workflows:
           name: check-test-list-change
           base-revision: main
           config-path: .circleci/continue.yml
-          # Only continue when the root-level test_list.py changes.
-          # Adjust the regex if test_list.py lives elsewhere.
           mapping: |
             ^test_list\.py$ run-tests true
