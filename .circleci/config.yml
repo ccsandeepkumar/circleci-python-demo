@@ -5,18 +5,12 @@ setup: true
 orbs:
   path-filtering: circleci/path-filtering@1.0.0
 
-executors:
-  python39:
-    docker:
-      - image: cimg/python:3.9.18
-
 workflows:
   version: 2.1
   filter-and-trigger:
     jobs:
       - path-filtering/filter:
           name: check-test-list-change
-          executor: python39   # ✅ FORCE Python 3.9
           base-revision: main
           config-path: .circleci/continue.yml
           mapping: |
