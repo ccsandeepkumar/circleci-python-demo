@@ -1,32 +1,17 @@
 version: 2.1
 
-jobs:
-  build-and-test:
-    docker:
-      - image: cimg/python:3.10
+setup: true
 
-    steps:
-      - checkout
-
-      - run:
-          name: Install dependencies
-          command: |
-            python -m venv venv
-            . venv/bin/activate
-            pip install --upgrade pip
-            pip install -r requirements.txt
-
-      - run:
-          name: Run filtered tests from test_list.py
-          command: |
-            . venv/bin/activate
-            echo "Selected tests from test_list.py:"
-            TESTS=$(python test_list.py)
-            echo "$TESTS"
-            pytest -v $TESTS
+orbs:
+  path-filtering: circleci/path-filtering@1.0.0
 
 workflows:
   version: 2
-  build:
+  filter-and-trigger:
     jobs:
-      - build-and-test
+      - path-filtering/filter:
+          name: check-test-list-change
+          base-revision: main
+          config-path: .circleci/continue.yml
+          mapping: |
+            test_list.py run-tests true
