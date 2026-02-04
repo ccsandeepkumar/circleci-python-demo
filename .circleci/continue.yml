@@ -1,17 +1,37 @@
 version: 2.1
 
-setup: true
+parameters:
+  run-tests:
+    type: boolean
+    default: false
 
-orbs:
-  path-filtering: circleci/path-filtering@1.0.0
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
+
+      - run:
+          name: Run tests from test_list.py
+          command: |
+            . venv/bin/activate
+            TESTS=$(python test_list.py)
+            echo "Running tests:"
+            echo "$TESTS"
+            pytest -v $TESTS
 
 workflows:
   version: 2
-  filter-and-trigger:
+  conditional-workflow:
+    when: << pipeline.parameters.run-tests >>
     jobs:
-      - path-filtering/filter:
-          name: check-test-list-change
-          base-revision: main
-          config-path: .circleci/continue.yml
-          mapping: |
-            test_list.py run-tests true
+      - build-and-test
